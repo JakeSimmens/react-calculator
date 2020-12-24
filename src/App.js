@@ -7,19 +7,24 @@ function App() {
   return (
 
     <div>
-      <Button num={9} />
-      <Button num={9}></Button>
-      <h1>hello</h1>
-      <Button num={9} />
-      <Another name="tom" />
-      <Another name="sam" />
-
-      <Squares />
+      <div className="row">
+        <Display />
+      </div>
+      <ButtonsRow chars={["AC","x^y","x^2","/"]} />
+      <ButtonsRow chars={["7","8","9","x"]} />
+      <ButtonsRow chars={["4","5","6","-"]} />
+      <ButtonsRow chars={["1","2","3","+"]} />
+      <ButtonsRow chars={["0",".","+/-","="]} />
 
     </div>
 
 
   );
+}
+
+function Display(){
+  let value = 596;
+  return <div className="result">{value}</div>
 }
 
 function Squares(){
@@ -33,13 +38,15 @@ function Squares(){
 
 }
 
-function Button(props){
-  let items = [];
-  for(let i=0; i < props.num; i++){
-    let element = <button className="btn" key={i}>{i}</button>;
-    items.push(element);
-  }
-  return <div>{items}</div>;
+function ButtonsRow(props){
+  let items = props.chars;
+
+  let buttons = items.map(
+    (button) => {
+      return <button className="btn">{button}</button>;
+    }
+  )
+  return <div className="row">{buttons}</div>;
 }
 
 class Another extends React.Component {
