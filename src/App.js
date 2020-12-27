@@ -24,16 +24,22 @@ class Calculator extends React.Component {
       currentNum: 0,
       currentOp: null,
       currentDisplay: 0,
+      decimalForNext: false,
       clearDisplayNext: false
     }
   }
 
   handleNumClick(num) {
     let addDigitToDisplay;
+    // if(decimalForNext){
+    //   num = num/10
+    // }
 
     if(this.state.clearDisplayNext){
       addDigitToDisplay = num;
     } else {
+      
+
       addDigitToDisplay = this.state.currentDisplay * 10 + num;
     }
 
@@ -48,7 +54,7 @@ class Calculator extends React.Component {
 
   handleOpClick(op) {
     if(op === "=" && this.state.currentOp){
-      
+
       if(this.state.currentOp === "+"){
         this.setState( (state) => {
           let result = this.state.prevNum + this.state.currentNum;
@@ -56,7 +62,8 @@ class Calculator extends React.Component {
             currentDisplay: result,
             currentNum: result,
             currentOp: null,
-            prevNum: null
+            prevNum: null,
+            decimalForNext: false
           }
         });
       }
@@ -68,7 +75,8 @@ class Calculator extends React.Component {
             currentDisplay: result,
             currentNum: result,
             currentOp: null,
-            prevNum: null
+            prevNum: null,
+            decimalForNext: false
           }
         });
       }
@@ -80,7 +88,8 @@ class Calculator extends React.Component {
             currentDisplay: result,
             currentNum: result,
             currentOp: null,
-            prevNum: null
+            prevNum: null,
+            decimalForNext: false
           }
         });
       }
@@ -92,7 +101,8 @@ class Calculator extends React.Component {
             currentDisplay: result,
             currentNum: result,
             currentOp: null,
-            prevNum: null
+            prevNum: null,
+            decimalForNext: false
           }
         });
       }
@@ -104,7 +114,8 @@ class Calculator extends React.Component {
             currentDisplay: result,
             currentNum: result,
             currentOp: null,
-            prevNum: null
+            prevNum: null,
+            decimalForNext: false
           }
         });
       }
@@ -117,9 +128,19 @@ class Calculator extends React.Component {
       return {
         currentOp: op,
         prevNum: this.state.currentNum,
-        clearDisplayNext: true
+        clearDisplayNext: true,
+        decimalForNext: false
       };
     })
+  }
+
+  handleDecimalClick(){
+    this.setState( (state) => {
+      return {
+        decimalForNext: true,
+        currentDisplay: this.state.currentDisplay.toString().concat(".")
+      };
+    });
   }
 
 
@@ -155,7 +176,7 @@ class Calculator extends React.Component {
         </div>
         <div className="row">
           <BtnForNum buttonNum={0} onClick={() => this.handleNumClick(0)}/>
-          <BtnForNum buttonNum={"."} onClick={() => this.handleNumClick(0)}/>
+          <BtnForNum buttonNum={"."} onClick={() => this.handleDecimalClick()}/>
           <BtnForNum buttonNum={0} onClick={() => this.handleNumClick(0)}/>
           <BtnForOperation operation={"="} className="btn" onClick={() => this.handleOpClick("=")} />
         </div>
