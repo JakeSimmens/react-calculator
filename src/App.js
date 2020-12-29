@@ -14,50 +14,39 @@ function App() {
   );
 }
 
-///////////////////
-
 class Calculator extends React.Component {
   constructor(props){
     super(props);
-    let ONE_TENTH = .1;
+
     this.state = {
       prevNum: null,
       currentNum: 0,
       currentOp: null,
       display: "",
       rightSideOfDecimal: false,
-      nextTenthCounter: ONE_TENTH,
       clearDisplayNext: false
     }
   }
 
   handleNumClick(num) {
-    let result;
-    let decimalTenth = this.state.nextTenthCounter;
-    console.log("num: ", this.state);
+
+    let resultStr;
+    let currentNum;
 
     if(this.state.clearDisplayNext){
-      if(this.state.rightSideOfDecimal){
-        result = num * decimalTenth;
-        decimalTenth *= .1;
-      } else {
-        result = num;
-      }
+      resultStr = num.toString();
+      currentNum = parseFloat(resultStr);
     } else {
-      if(this.state.rightSideOfDecimal){
-        result = this.state.display + Math.round(decimalTenth * num, decimalTenth);
-        decimalTenth *= .1;
-      } else {
-        result = this.state.display * 10 + num;
-      }
-
+      resultStr = this.state.display.concat(num.toString());
+      currentNum = parseFloat(resultStr);
     }
 
-    this.setState( (state) => {
+
+
+    this.setState( () => {
       return {
-        display: this.state.display.concat(num.toString()),
-        currentNum: result,
-        nextTenthCounter: decimalTenth,
+        display: resultStr,
+        currentNum: currentNum,
         clearDisplayNext: false
       };
     });
@@ -70,80 +59,103 @@ class Calculator extends React.Component {
     }
 
     this.setState( () => {
-      console.log(this.state);
+
       let display;
+      let updatePrevNum = this.state.prevNum;
 
       if(this.state.clearDisplayNext){
-          display = "0.";
+        updatePrevNum = this.state.currentNum;
+        display = "0.";
+
       } else {
-          display = this.state.display.toString().concat(".");
+          display = this.state.display.concat(".");
       }
 
       return {
         rightSideOfDecimal: true,
-        prevNum: this.state.currentNum,
+        prevNum: updatePrevNum,
         currentNum: 0,
+        clearDisplayNext: false,
         display: display
       };
     });
 
   }
 
-  //try parseFloat
-
   handleEqualsClick(){
+
+    if(this.state.prevNum === null){
+      return;
+    }
+
+    let firstNum = this.state.prevNum;
+    let secondNum = this.state.currentNum;
 
     if(this.state.currentOp === "+"){
       this.setState( (state) => {
-        let result = this.state.prevNum + this.state.currentNum;
+        let result = firstNum + secondNum;
         return {
-          display: result.toString(),
+          clearDisplayNext: true,
           currentNum: result,
           currentOp: null,
+          display: result.toString(),
           prevNum: null,
-          clearDisplayNext: true,
           rightSideOfDecimal: false
         }
       });
     }
 
     if(this.state.currentOp === "-"){
-      this.setState( (state) => {
-        let result = this.state.prevNum - this.state.currentNum;
+      this.setState( () => {
+        let result = firstNum - secondNum;
         return {
-          display: result.toString(),
+          clearDisplayNext: true,
           currentNum: result,
           currentOp: null,
+          display: result.toString(),
           prevNum: null,
-          clearDisplayNext: true,
           rightSideOfDecimal: false
         }
       });
     }
 
     if(this.state.currentOp === "x"){
-      this.setState( (state) => {
-        let result = this.state.prevNum * this.state.currentNum;
+      this.setState( () => {
+        let result = firstNum * secondNum;
         return {
-          display: result.toString(),
+          clearDisplayNext: true,
           currentNum: result,
           currentOp: null,
+          display: result.toString(),
           prevNum: null,
-          clearDisplayNext: true,
           rightSideOfDecimal: false
         }
       });
     }
 
     if(this.state.currentOp === "/"){
-      this.setState( (state) => {
-        let result = this.state.prevNum / this.state.currentNum;
+      this.setState( () => {
+        let result = firstNum / secondNum;
         return {
-          display: result.toString(),
+          clearDisplayNext: true,
           currentNum: result,
           currentOp: null,
+          display: result.toString(),
           prevNum: null,
+          rightSideOfDecimal: false
+        }
+      });
+    }
+
+    if(this.state.currentOp === "^"){
+      this.setState( () => {
+        let result = Math.pow(firstNum, secondNum)
+        return {
           clearDisplayNext: true,
+          currentNum: result,
+          currentOp: null,
+          display: result.toString(),
+          prevNum: null,
           rightSideOfDecimal: false
         }
       });
@@ -154,31 +166,27 @@ class Calculator extends React.Component {
   handleOpClick(op) {
 
     if(op === "AC"){
-      this.setState( (state) => {
+      this.setState( () => {
         return {
-          prevNum: null,
+          clearDisplayNext: false,
           currentNum: 0,
           currentOp: null,
           display: "",
+          prevNum: null,
           rightSideOfDecimal: false,
-          nextTenthCounter: .1,
-          clearDisplayNext: false
           }
         });
     }
 
-    if(op === "X^Y"){
-      
-    }
 
-    this.setState((state) => {
+    this.setState(() => {
       return {
+        clearDisplayNext: true,
         currentOp: op,
         prevNum: this.state.currentNum,
-        clearDisplayNext: true,
         rightSideOfDecimal: false
       };
-    })
+    });
   }
 
 
@@ -189,8 +197,8 @@ class Calculator extends React.Component {
 
         <div className="row">
           <BtnForNum buttonNum={"AC"} onClick={() => this.handleOpClick("AC")}/>
-          <BtnForNum buttonNum={"X^Y"} onClick={() => this.handleOpClick("X^Y")}/>
-          <BtnForNum buttonNum={"X^2"} onClick={() => this.handleNumClick("X^2")}/>
+          <BtnForNum buttonNum={"X^Y"} onClick={() => this.handleOpClick("^")}/>
+          <BtnForNum buttonNum={"?"} onClick={() => {}}/>
           <BtnForOperation operation={"/"} className="btn" onClick={() => this.handleOpClick("/")} />
         </div>
         <div className="row">

@@ -29,4 +29,5 @@ code {
   font-size: 1.75em;
   border: solid gray 1px;
   text-align: right;
+  overflow: hidden;
 }
