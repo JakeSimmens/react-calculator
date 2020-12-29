@@ -24,7 +24,7 @@ class Calculator extends React.Component {
       prevNum: null,
       currentNum: 0,
       currentOp: null,
-      display: 0,
+      display: "",
       rightSideOfDecimal: false,
       nextTenthCounter: ONE_TENTH,
       clearDisplayNext: false
@@ -32,31 +32,31 @@ class Calculator extends React.Component {
   }
 
   handleNumClick(num) {
-    let addDigitToDisplay;
+    let result;
     let decimalTenth = this.state.nextTenthCounter;
     console.log("num: ", this.state);
 
     if(this.state.clearDisplayNext){
       if(this.state.rightSideOfDecimal){
-        addDigitToDisplay = num * decimalTenth;
+        result = num * decimalTenth;
         decimalTenth *= .1;
       } else {
-        addDigitToDisplay = num;
+        result = num;
       }
     } else {
       if(this.state.rightSideOfDecimal){
-        addDigitToDisplay = this.state.display + Math.round(decimalTenth * num, decimalTenth);
+        result = this.state.display + Math.round(decimalTenth * num, decimalTenth);
         decimalTenth *= .1;
       } else {
-        addDigitToDisplay = this.state.display * 10 + num;
+        result = this.state.display * 10 + num;
       }
 
     }
 
     this.setState( (state) => {
       return {
-        display: addDigitToDisplay,
-        currentNum: addDigitToDisplay,
+        display: this.state.display.concat(num.toString()),
+        currentNum: result,
         nextTenthCounter: decimalTenth,
         clearDisplayNext: false
       };
@@ -65,14 +65,18 @@ class Calculator extends React.Component {
 
   handleDecimalClick(){
 
+    if(this.state.rightSideOfDecimal){
+      return;
+    }
+
     this.setState( () => {
       console.log(this.state);
       let display;
 
       if(this.state.clearDisplayNext){
-          display = 0;
+          display = "0.";
       } else {
-          display = this.state.display;
+          display = this.state.display.toString().concat(".");
       }
 
       return {
@@ -93,7 +97,7 @@ class Calculator extends React.Component {
       this.setState( (state) => {
         let result = this.state.prevNum + this.state.currentNum;
         return {
-          display: result,
+          display: result.toString(),
           currentNum: result,
           currentOp: null,
           prevNum: null,
@@ -107,7 +111,7 @@ class Calculator extends React.Component {
       this.setState( (state) => {
         let result = this.state.prevNum - this.state.currentNum;
         return {
-          display: result,
+          display: result.toString(),
           currentNum: result,
           currentOp: null,
           prevNum: null,
@@ -121,7 +125,7 @@ class Calculator extends React.Component {
       this.setState( (state) => {
         let result = this.state.prevNum * this.state.currentNum;
         return {
-          display: result,
+          display: result.toString(),
           currentNum: result,
           currentOp: null,
           prevNum: null,
@@ -135,7 +139,7 @@ class Calculator extends React.Component {
       this.setState( (state) => {
         let result = this.state.prevNum / this.state.currentNum;
         return {
-          display: result,
+          display: result.toString(),
           currentNum: result,
           currentOp: null,
           prevNum: null,
@@ -155,7 +159,7 @@ class Calculator extends React.Component {
           prevNum: null,
           currentNum: 0,
           currentOp: null,
-          display: 0,
+          display: "",
           rightSideOfDecimal: false,
           nextTenthCounter: .1,
           clearDisplayNext: false
