@@ -19,39 +19,73 @@ function App() {
 class Calculator extends React.Component {
   constructor(props){
     super(props);
+    let ONE_TENTH = .1;
     this.state = {
       prevNum: null,
       currentNum: 0,
       currentOp: null,
-      currentDisplay: 0,
-      decimalForNext: false,
-      decimalLocation: .1,
+      display: 0,
+      rightSideOfDecimal: false,
+      nextTenthCounter: ONE_TENTH,
       clearDisplayNext: false
     }
   }
 
   handleNumClick(num) {
     let addDigitToDisplay;
-    // if(decimalForNext){
-    //   num = num/10
-    // }
+    let decimalTenth = this.state.nextTenthCounter;
+    console.log("num: ", this.state);
 
     if(this.state.clearDisplayNext){
-      addDigitToDisplay = num;
+      if(this.state.rightSideOfDecimal){
+        addDigitToDisplay = num * decimalTenth;
+        decimalTenth *= .1;
+      } else {
+        addDigitToDisplay = num;
+      }
     } else {
-      
+      if(this.state.rightSideOfDecimal){
+        addDigitToDisplay = this.state.display + Math.round(decimalTenth * num, decimalTenth);
+        decimalTenth *= .1;
+      } else {
+        addDigitToDisplay = this.state.display * 10 + num;
+      }
 
-      addDigitToDisplay = this.state.currentDisplay * 10 + num;
     }
 
     this.setState( (state) => {
       return {
-        currentDisplay: addDigitToDisplay,
+        display: addDigitToDisplay,
         currentNum: addDigitToDisplay,
+        nextTenthCounter: decimalTenth,
         clearDisplayNext: false
       };
     });
   }
+
+  handleDecimalClick(){
+
+    this.setState( () => {
+      console.log(this.state);
+      let display;
+
+      if(this.state.clearDisplayNext){
+          display = 0;
+      } else {
+          display = this.state.display;
+      }
+
+      return {
+        rightSideOfDecimal: true,
+        prevNum: this.state.currentNum,
+        currentNum: 0,
+        display: display
+      };
+    });
+
+  }
+
+  //try parseFloat
 
   handleEqualsClick(){
 
@@ -59,11 +93,12 @@ class Calculator extends React.Component {
       this.setState( (state) => {
         let result = this.state.prevNum + this.state.currentNum;
         return {
-          currentDisplay: result,
+          display: result,
           currentNum: result,
           currentOp: null,
           prevNum: null,
-          decimalForNext: false
+          clearDisplayNext: true,
+          rightSideOfDecimal: false
         }
       });
     }
@@ -72,11 +107,12 @@ class Calculator extends React.Component {
       this.setState( (state) => {
         let result = this.state.prevNum - this.state.currentNum;
         return {
-          currentDisplay: result,
+          display: result,
           currentNum: result,
           currentOp: null,
           prevNum: null,
-          decimalForNext: false
+          clearDisplayNext: true,
+          rightSideOfDecimal: false
         }
       });
     }
@@ -85,11 +121,12 @@ class Calculator extends React.Component {
       this.setState( (state) => {
         let result = this.state.prevNum * this.state.currentNum;
         return {
-          currentDisplay: result,
+          display: result,
           currentNum: result,
           currentOp: null,
           prevNum: null,
-          decimalForNext: false
+          clearDisplayNext: true,
+          rightSideOfDecimal: false
         }
       });
     }
@@ -98,11 +135,12 @@ class Calculator extends React.Component {
       this.setState( (state) => {
         let result = this.state.prevNum / this.state.currentNum;
         return {
-          currentDisplay: result,
+          display: result,
           currentNum: result,
           currentOp: null,
           prevNum: null,
-          decimalForNext: false
+          clearDisplayNext: true,
+          rightSideOfDecimal: false
         }
       });
     }
@@ -117,12 +155,16 @@ class Calculator extends React.Component {
           prevNum: null,
           currentNum: 0,
           currentOp: null,
-          currentDisplay: 0,
-          decimalForNext: false,
-          decimalLocation: .1,
+          display: 0,
+          rightSideOfDecimal: false,
+          nextTenthCounter: .1,
           clearDisplayNext: false
           }
         });
+    }
+
+    if(op === "X^Y"){
+      
     }
 
     this.setState((state) => {
@@ -130,41 +172,21 @@ class Calculator extends React.Component {
         currentOp: op,
         prevNum: this.state.currentNum,
         clearDisplayNext: true,
-        decimalForNext: false
+        rightSideOfDecimal: false
       };
     })
   }
 
 
-
-  handleDecimalClick(){
-    this.setState( (state) => {
-      let display;
-
-      if(this.state.clearDisplayNext){
-          display = "0.";
-      } else {
-          display = this.state.currentDisplay.toString().concat(".");
-      }
-
-      return {
-        decimalForNext: true,
-        currentDisplay: display
-      };
-    });
-  }
-
-
-
   render(){
     return(
       <div>
-        <Display output = {this.state.currentDisplay}/>
+        <Display output = {this.state.display}/>
 
         <div className="row">
           <BtnForNum buttonNum={"AC"} onClick={() => this.handleOpClick("AC")}/>
-          <BtnForNum buttonNum={"X^Y"} onClick={() => this.handleNumClick(0)}/>
-          <BtnForNum buttonNum={"X^2"} onClick={() => this.handleNumClick(0)}/>
+          <BtnForNum buttonNum={"X^Y"} onClick={() => this.handleOpClick("X^Y")}/>
+          <BtnForNum buttonNum={"X^2"} onClick={() => this.handleNumClick("X^2")}/>
           <BtnForOperation operation={"/"} className="btn" onClick={() => this.handleOpClick("/")} />
         </div>
         <div className="row">
@@ -196,6 +218,7 @@ class Calculator extends React.Component {
     );
   }
 }
+
 
 function BtnForNum(props){
     let buttonNum = props.buttonNum;
@@ -229,19 +252,6 @@ function BtnForEquals(props){
       {btnOper}
   </button>;
 }
-
-/* <ButtonsRow chars={["AC","x^y","x^2","/"]} />
-<ButtonsRow chars={["7","8","9","x"]} />
-<ButtonsRow chars={["4","5","6","-"]} />
-<ButtonsRow chars={["1","2","3","+"]} />
-<ButtonsRow chars={["0",".","+/-","="]} /> */
-
-// function Display(props){
-//   return (
-//       <div className="result row">{props.output}</div>
-//   );
-  
-// }
 
 function Display(props){
   return (
