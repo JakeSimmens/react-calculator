@@ -33,7 +33,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-A basic calculator created using React that can add, subtract, multiple, divid, and figure exponents.
+A basic calculator created using React that can add, subtract, multiple, divide, and figure exponents.
 
 <img src="./reactCalcScreenShot.png" align="center" width=50%>
 
