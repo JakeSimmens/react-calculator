@@ -1,8 +1,3 @@
-# React Calculator
-
-
-
-
 <!-- PROJECT LOGO -->
 <br />
 <p align="center">
